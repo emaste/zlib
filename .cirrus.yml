@@ -1,0 +1,21 @@
+freebsd_task:
+        install_script: ASSUME_ALWAYS_YES=yes pkg bootstrap -f ; pkg install -y cmake ninja
+        script:
+                - mkdir build
+                - cd build
+                - cmake -GNinja ..
+                - ninja
+        check_script:
+                - cd build
+                - ninja test
+        matrix:
+                - name: freebsd13-amd64
+                  freebsd_instance:
+                     image: freebsd-13-2-release-amd64
+                - name: freebsd14-amd64
+                  freebsd_instance:
+                     image: freebsd-14-0-release-amd64
+                  #env:
+                     #EXTRA_ARGS: --with-asan --with-ubsan
+                     # There are still a few occurrences of this error (adding offset to NULL pointer)
+                     # CPPFLAGS: -fno-sanitize=pointer-overflow -ftrivial-auto-var-init=pattern
